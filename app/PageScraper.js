@@ -13,11 +13,16 @@ var PageScraper = function(url, callback){
 		pages: 0
 
 	}
-	this.data = {};
+	this.data = [];
 	this.allFinished = false;
 	this.dataPoints = [];
 
 	//Describe the data points to extract and how to extract them from the listing domNode
+	var id = new DataPoint('_id');
+	id.addExtractionMethod('overview', function($domNode){
+		return parseInt($domNode.data('pid'));
+	});
+
 	var priceDataPoint = new DataPoint('price');
 	priceDataPoint.addExtractionMethod('overview', function($domNode){
 		return parseInt($domNode.find('span.price').text().substr(1));
@@ -50,6 +55,7 @@ var PageScraper = function(url, callback){
 		return (match)? parseInt(match[1]) : "";
 	});
 
+	this.dataPoints.push(id);
 	this.dataPoints.push(sqft);
 	this.dataPoints.push(listingDate);
 	this.dataPoints.push(priceDataPoint);
@@ -79,14 +85,12 @@ PageScraper.prototype.crawlPage = function(url, dataPoints){
 				var listingData = {};
 				self.stats.count++;
 
-				var id = parseInt($(listingEl).data('pid'));
-
 				//runs all the dataPoint extraction methods against the listing Node
 				for (var i = dataPoints.length - 1; i >= 0; i--) {
 					listingData[dataPoints[i].name] = dataPoints[i].getExtractionMethod('overview')($(listingEl));
 				};
 
-				self.data[id] = listingData;
+				self.data.push(listingData);
 			});
 
 			self.stats.listedTotal = $('.totallink').text();

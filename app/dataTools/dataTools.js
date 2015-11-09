@@ -1,5 +1,4 @@
 var Tools = {
-
 	calculateAverage : function(dataSet){
 		var total = 0;
 		var dataKeys = Object.keys(dataSet);
@@ -11,8 +10,8 @@ var Tools = {
 				actualDataCount--;
 			}
 		};
-		console.log(actualDataCount);
-		console.log(total/actualDataCount);
+
+		return (total/actualDataCount);
 	},
 	isValidData: function (datum){
 		return typeof datum === 'number' 
